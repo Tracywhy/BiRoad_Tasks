@@ -101,18 +101,6 @@ source scripts/env.sh
 
 `scripts/env.sh` derives the repository root from its own location. Source it in each new shell before launching RLBench.
 
-### Smoke test
-
-Launch and reset a task in headless mode:
-
-```bash
-python examples/run_biroad_task.py \
-  --task bimanual_put_item_in_drawer_random \
-  --headless
-```
-
-Omit `--headless` to open the CoppeliaSim graphical interface. Another task can be selected using any module name from the task table above.
-
 ## Dataset Generation
 
 The included bimanual dataset generator uses the task definitions directly from `rlbench/bimanual_tasks/`:
