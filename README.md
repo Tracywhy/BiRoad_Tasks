@@ -4,7 +4,7 @@ This repository provides a self-contained bimanual RLBench environment and the t
 
 BiRoAD studies scene-conditioned role adaptation in bimanual manipulation. Different scene configurations can require the two arms to exchange their functional roles while preserving the same high-level task goal. The task suite is designed to evaluate whether a policy learns this role adaptation instead of associating a behavior with a fixed arm identity.
 
-The repository includes the modified RLBench runtime, its standard task assets, the compatible PyRep source, the dual-Panda environment, and the BiRoAD task suite. It does not include policy implementations, training code, demonstrations, or evaluation datasets.
+The repository includes the PerAct2 bimanual RLBench runtime, its original single-arm and bimanual task assets, the matching bimanual PyRep fork, the dual-Panda environment, and the additional BiRoAD task suite. It does not include policy implementations, training code, demonstrations, or evaluation datasets.
 
 ## Task Suite
 
@@ -46,11 +46,12 @@ BiRoad_Tasks/
 |-- examples/             # RLBench examples and a BiRoAD task launcher
 |-- rlbench/
 |   |-- backend/          # RLBench task and scene backend
-|   |-- bimanual_tasks/   # Bimanual Python task definitions
+|   |-- tasks/            # Tasks inherited from the bimanual RLBench fork
+|   |-- bimanual_tasks/   # Original bimanual tasks and BiRoAD additions
 |   |-- robot_ttms/       # Robot models
 |   `-- task_ttms/        # CoppeliaSim task models
 |-- scripts/              # Repository-relative environment setup
-|-- third_party/PyRep/    # Compatible PyRep source
+|-- third_party/PyRep/    # Bimanual PyRep fork with dual-Panda support
 |-- tools/                # Dataset generation and task utilities
 |-- pyproject.toml
 |-- requirements.txt
@@ -61,7 +62,7 @@ Every Python task definition in `rlbench/bimanual_tasks/` has a model with the s
 
 ## Installation
 
-The included PyRep version requires CoppeliaSim 4.1 and currently targets Linux. Python 3.8 is recommended for compatibility with this RLBench/PyRep stack.
+This repository must be used with its bundled bimanual RLBench and PyRep code rather than the standard single-arm packages from PyPI. The bundled PyRep fork provides `PandaLeft`, `PandaRight`, and the matching dual grippers; RLBench exposes them through `robot_setup="dual_panda"`. It requires CoppeliaSim 4.1 and currently targets Linux. Python 3.8 is recommended for compatibility with this stack.
 
 Before installing, make sure that `python3`, `pip`, `curl`, a C/C++ compiler, and Python development headers are available. GPU-based headless rendering additionally requires a working NVIDIA/X or VirtualGL setup.
 
@@ -89,7 +90,7 @@ bash scripts/setup_environment.sh
 source scripts/env.sh
 ```
 
-By default, the script downloads CoppeliaSim 4.1 for Ubuntu 20.04 into `.deps/CoppeliaSim`, then installs the bundled PyRep source and this RLBench environment in editable mode. No machine-specific path is stored in the repository.
+By default, the script downloads CoppeliaSim 4.1 for Ubuntu 20.04 into `.deps/CoppeliaSim`, installs `third_party/PyRep` in editable mode, and then installs this bimanual RLBench package. The script finishes by verifying that both `dual_panda` and the dual-arm PyRep classes are available. No machine-specific path is stored in the repository.
 
 If CoppeliaSim 4.1 is already installed next to this repository, point `COPPELIASIM_ROOT` to it using a path derived from the clone:
 
@@ -113,7 +114,7 @@ Generated demonstrations are written to the output path selected at runtime; no 
 
 ## Upstream Projects
 
-This environment is derived from the original [RLBench repository](https://github.com/stepjam/RLBench) and bundles a compatible fork of [PyRep](https://github.com/stepjam/PyRep). The original project licenses are retained in `LICENSE` and `third_party/PyRep/LICENSE`.
+This environment is based on the PerAct2 [bimanual RLBench fork](https://github.com/markusgrotz/RLBench) and bundles its matching [bimanual PyRep fork](https://github.com/markusgrotz/PyRep). Those projects extend the original [RLBench](https://github.com/stepjam/RLBench) and [PyRep](https://github.com/stepjam/PyRep) repositories. The original project licenses are retained in `LICENSE` and `third_party/PyRep/LICENSE`.
 
 ## Citation
 

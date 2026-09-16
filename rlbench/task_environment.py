@@ -164,10 +164,8 @@ class TaskEnvironment(object):
                         max_attempts: int = _MAX_DEMO_ATTEMPTS) -> List[Demo]:
         demos = []
         for i in range(amount):
-            attempts = 0
-            success = False
-            while not success:  # Infinite retry until success
-                attempts += 1
+            attempts = max_attempts
+            while attempts > 0:
                 random_seed = np.random.get_state()
                 self.reset()
                 try:
@@ -175,11 +173,13 @@ class TaskEnvironment(object):
                         callable_each_step=callable_each_step)
                     demo.random_seed = random_seed
                     demos.append(demo)
-                    success = True
-                    logging.info(f'✓ Demo {i+1}/{amount} succeeded after {attempts} attempts')
                     break
                 except Exception as e:
-                    logging.warning(f'✗ Demo {i+1}/{amount} attempt {attempts} failed: {str(e)}. Retrying...')
+                    attempts -= 1
+                    logging.warning('Bad demo. ' + str(e) + ' Attempts left: ' + str(attempts))
+            if attempts <= 0:
+                raise RuntimeError(
+                    'Could not collect demos. Maybe a problem with the task?')
         return demos
 
     def reset_to_demo(self, demo: Demo) -> (List[str], Observation):

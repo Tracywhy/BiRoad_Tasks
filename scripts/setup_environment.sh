@@ -30,6 +30,18 @@ export QT_QPA_PLATFORM_PLUGIN_PATH="${COPPELIASIM_ROOT}"
 "${PYTHON_BIN}" -m pip install -r "${REPO_ROOT}/requirements.txt"
 "${PYTHON_BIN}" -m pip install -e "${REPO_ROOT}"
 
+"${PYTHON_BIN}" - <<'PY'
+from pyrep.robots.arms.dual_panda import PandaLeft, PandaRight
+from pyrep.robots.end_effectors.dual_panda_gripper import (
+    PandaGripperLeft,
+    PandaGripperRight,
+)
+from rlbench.const import SUPPORTED_ROBOTS
+
+assert "dual_panda" in SUPPORTED_ROBOTS
+print("Verified bundled bimanual RLBench/PyRep support: dual_panda")
+PY
+
 echo
 echo "Installation complete. Before using RLBench in a new shell, run:"
 echo "  source scripts/env.sh"

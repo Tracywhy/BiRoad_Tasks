@@ -237,4 +237,3 @@ class Environment(object):
         self.shutdown()
         self._headless = headless
         return d
-    

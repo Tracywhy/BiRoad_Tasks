@@ -1,1 +1,0 @@
-from rlbench.bimanual_tasks.bimanual_pick_plate_random import BimanualPickPlateRandom
