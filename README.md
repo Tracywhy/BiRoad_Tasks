@@ -1,10 +1,10 @@
 # BiRoAD RLBench Task Suite
 
-This repository provides the RLBench task definitions and CoppeliaSim model files used for the simulation evaluation in *BiRoAD: Learning Shared and Role-Adaptive Representations for Bimanual Manipulation*.
+This repository provides a self-contained bimanual RLBench environment and the task definitions and CoppeliaSim model files used for the simulation evaluation in *BiRoAD: Learning Shared and Role-Adaptive Representations for Bimanual Manipulation*.
 
 BiRoAD studies scene-conditioned role adaptation in bimanual manipulation. Different scene configurations can require the two arms to exchange their functional roles while preserving the same high-level task goal. The task suite is designed to evaluate whether a policy learns this role adaptation instead of associating a behavior with a fixed arm identity.
 
-This repository contains task assets only. It does not include policy implementations, training code, demonstrations, or evaluation datasets.
+The repository includes the modified RLBench runtime, its standard task assets, the compatible PyRep source, the dual-Panda environment, and the BiRoAD task suite. It does not include policy implementations, training code, demonstrations, or evaluation datasets.
 
 ## Task Suite
 
@@ -43,16 +43,29 @@ The BiRoAD experiments use these paired configurations to study both balanced an
 
 ```text
 BiRoad_Tasks/
-|-- bimanual_tasks/   # Python task definitions
-|-- task_ttms/        # CoppeliaSim task models
+|-- examples/             # RLBench examples and a BiRoAD task launcher
+|-- rlbench/
+|   |-- backend/          # RLBench task and scene backend
+|   |-- bimanual_tasks/   # Bimanual Python task definitions
+|   |-- robot_ttms/       # Robot models
+|   `-- task_ttms/        # CoppeliaSim task models
+|-- scripts/              # Repository-relative environment setup
+|-- third_party/PyRep/    # Compatible PyRep source
+|-- tools/                # Dataset generation and task utilities
+|-- pyproject.toml
+|-- requirements.txt
 `-- README.md
 ```
 
-Every Python task definition in `bimanual_tasks/` has a model with the same basename in `task_ttms/`.
+Every Python task definition in `rlbench/bimanual_tasks/` has a model with the same basename in `rlbench/task_ttms/`.
 
 ## Installation
 
-These tasks require a bimanual RLBench/PerAct2-compatible environment that provides `BimanualTask` and a two-arm Panda setup. They are not standalone tasks for an unmodified single-arm RLBench installation.
+The included PyRep version requires CoppeliaSim 4.1 and currently targets Linux. Python 3.8 is recommended for compatibility with this RLBench/PyRep stack.
+
+Before installing, make sure that `python3`, `pip`, `curl`, a C/C++ compiler, and Python development headers are available. GPU-based headless rendering additionally requires a working NVIDIA/X or VirtualGL setup.
+
+### Quick setup
 
 Clone this repository:
 
@@ -61,18 +74,62 @@ git clone https://github.com/Tracywhy/BiRoad_Tasks.git
 cd BiRoad_Tasks
 ```
 
-Copy the task definitions and models into the corresponding directories of your bimanual RLBench installation:
+Create and activate a Python environment. A repository-local virtual environment keeps every project path relative to the clone:
 
 ```bash
-cp bimanual_tasks/*.py /path/to/RLBench/rlbench/bimanual_tasks/
-cp task_ttms/*.ttm /path/to/RLBench/rlbench/task_ttms/
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
 ```
 
-Keep each `.py` file paired with the `.ttm` file that has the same basename. The tasks can then be imported and launched through the same workflow used for other bimanual RLBench tasks in your environment.
+Run the setup script:
+
+```bash
+bash scripts/setup_environment.sh
+source scripts/env.sh
+```
+
+By default, the script downloads CoppeliaSim 4.1 for Ubuntu 20.04 into `.deps/CoppeliaSim`, then installs the bundled PyRep source and this RLBench environment in editable mode. No machine-specific path is stored in the repository.
+
+If CoppeliaSim 4.1 is already installed next to this repository, point `COPPELIASIM_ROOT` to it using a path derived from the clone:
+
+```bash
+export COPPELIASIM_ROOT="$(pwd)/../CoppeliaSim"
+bash scripts/setup_environment.sh
+source scripts/env.sh
+```
+
+`scripts/env.sh` derives the repository root from its own location. Source it in each new shell before launching RLBench.
+
+### Smoke test
+
+Launch and reset a task in headless mode:
+
+```bash
+python examples/run_biroad_task.py \
+  --task bimanual_put_item_in_drawer_random \
+  --headless
+```
+
+Omit `--headless` to open the CoppeliaSim graphical interface. Another task can be selected using any module name from the task table above.
+
+## Dataset Generation
+
+The included bimanual dataset generator uses the task definitions directly from `rlbench/bimanual_tasks/`:
+
+```bash
+python tools/dataset_generator_bimanual.py --help
+```
+
+Generated demonstrations are written to the output path selected at runtime; no local dataset path is hard-coded in this repository.
+
+## Upstream Projects
+
+This environment is derived from the original [RLBench repository](https://github.com/stepjam/RLBench) and bundles a compatible fork of [PyRep](https://github.com/stepjam/PyRep). The original project licenses are retained in `LICENSE` and `third_party/PyRep/LICENSE`.
 
 ## Citation
 
-This task suite is built on [RLBench](https://github.com/stepjam/RLBench). Please cite RLBench when using these task assets:
+Please cite the original RLBench project when using this environment or its task assets:
 
 ```bibtex
 @article{james2019rlbench,

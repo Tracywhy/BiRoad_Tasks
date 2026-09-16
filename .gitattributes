@@ -1,0 +1,10 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+*.gif binary
+*.jpg binary
+*.jpeg binary
+*.obj binary
+*.png binary
+*.ttm binary
+*.ttt binary
