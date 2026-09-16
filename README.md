@@ -75,18 +75,28 @@ git clone https://github.com/Tracywhy/BiRoad_Tasks.git
 cd BiRoad_Tasks
 ```
 
-Create and activate a Python environment. A repository-local virtual environment keeps every project path relative to the clone:
+Create and activate a Python 3.8 environment using either Conda or `venv`. Conda is recommended for this legacy CoppeliaSim/PyRep stack.
+
+Using Conda:
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
+conda create -n biroad-rlbench python=3.8 -y
+conda activate biroad-rlbench
+python -m pip install --upgrade pip setuptools wheel
 ```
 
-Run the setup script:
+Alternatively, using `venv`:
 
 ```bash
-bash scripts/setup_environment.sh
+python3.8 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip setuptools wheel
+```
+
+Run the setup script with the Python interpreter from the activated environment:
+
+```bash
+PYTHON_BIN=python bash scripts/setup_environment.sh
 source scripts/env.sh
 ```
 
@@ -96,7 +106,7 @@ If CoppeliaSim 4.1 is already installed next to this repository, point `COPPELIA
 
 ```bash
 export COPPELIASIM_ROOT="$(pwd)/../CoppeliaSim"
-bash scripts/setup_environment.sh
+PYTHON_BIN=python bash scripts/setup_environment.sh
 source scripts/env.sh
 ```
 
